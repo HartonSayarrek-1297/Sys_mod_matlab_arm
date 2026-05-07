@@ -23,18 +23,18 @@ function p = draw_basis (home, vectors, sphere_onoff, brightness, index)
     % text(0, 0, vectors(3,3), 'Z');
 
     if (sphere_onoff == true)
-        r = 1; % sphere radius
+        r = 2; % sphere radius
         fi = 10; % angle step (degrees)
 
-        x1 = linspace(-1, 1, 100);
-        y1 = sqrt(r - (x1.^2));
+        x1 = linspace(-r, r, 100);
+        y1 = sqrt(r^2 - (x1.^2));
         z1 = linspace(0, 0, 100);
         plot3(x1, y1, z1, 'c', 'LineWidth',3);
         plot3(x1, (-1).*y1, z1, 'c', 'LineWidth',3); % "Equator" of sphere
         
         x2 = linspace(0, 0, 100);
-        y2 = linspace(-1, 1, 100);
-        z2 = sqrt(r - (y2.^2));
+        y2 = linspace(-r, r, 100);
+        z2 = sqrt(r^2 - (y2.^2));
         plot3(x2, y2, z2, 'c');
         plot3(x2, y2, (-1).*z2, 'c'); % First ring
 
