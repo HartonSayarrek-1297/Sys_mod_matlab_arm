@@ -9,7 +9,7 @@ function [X_new, rel_home_current, rel_basis_current, temp_b_new] = orbital_mode
         temp_b_new = temp_b;
     end
     
-    X_new = RK4_shift(@DE_sys_hard, X, M_xyz(1:3), dt);
+    X_new = RK4_shift(@DE_sys_hard, X, M_xyz(1:3), dt/50);
 
     w = X_new(1:3);
     q = X_new(4:7);

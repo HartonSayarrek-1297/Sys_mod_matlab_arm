@@ -36,7 +36,8 @@ if (vis_enable)
     zlim([-7 7]);
 end
 
-duration = 5;
+duration = 30;
+
 dt = 0.05;
 timeline = 0:dt:duration;
 timelen = length(timeline);
@@ -81,7 +82,12 @@ for i = 1:timelen
         temp = draw_vector(rel_home, v_d_fi, [1 0 1]);
     end
     
-    M_xyz = regulator(v_d_fi, X(1:3));
+    if (i > 1)
+        M_prev = M_logs(i-1, :);
+    else
+        M_prev = [0 0 0];
+    end
+    M_xyz = regulator(M_prev, v_d_fi, X(1:3));
     [X, rel_home, rel_basis, temp_b] = orbital_modeling_step(dt, rel_home, rel_basis, X, M_xyz, temp_b);
     X_logs(i,:) = X;
     v_d_logs(i,:) = v_d_fi;
