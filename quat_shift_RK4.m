@@ -15,5 +15,7 @@ function [s_new, w_new] = quat_shift_RK4(s, w, dt)
 
     k_med = (dt/6) .* (k1 + 2.*k2 + 2.*k3 + k4);
     s_new = s + k_med;
+    N = norm(s_new, 2);
+    s_new = s_new./N;
     w_new = w;
 end

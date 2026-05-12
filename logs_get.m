@@ -63,3 +63,31 @@ plot(timeline, v_d_logs(:,3), "Color", [0 0 1]);
 ylabel('vd fi, [degrees/sec]');
 xlabel('t, [sec]');
 legend('vd_x','vd_y','vd_z');
+
+subplot(3,1,2);
+title('Logs of earth vect');
+hold on;
+grid on;
+grid minor;
+% axis equal;
+plot(timeline, ev_logs(:,1), "Color", [1 0 0]);
+plot(timeline, ev_logs(:,2), "Color", [0 1 0]);
+plot(timeline, ev_logs(:,3), "Color", [0 0 1]);
+ylabel('ev');
+xlabel('t, [sec]');
+legend('ev_x','ev_y','ev_z');
+
+subplot(3,1,3);
+title('Logs of q orb');
+hold on;
+grid on;
+grid minor;
+% axis equal;
+plot(timeline, qrb_logs(:,1), "Color", [0 0 0]);
+plot(timeline, qrb_logs(:,2), "Color", [1 0 0]);
+plot(timeline, qrb_logs(:,3), "Color", [0 1 0]);
+plot(timeline, qrb_logs(:,4), "Color", [0 0 1]);
+ylabel('q orb');
+xlabel('t, [sec]');
+legend('qrb_0','qrb_1','qrb_2', 'qrb_3');
+
