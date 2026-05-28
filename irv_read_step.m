@@ -1,3 +1,3 @@
-function [earth_vect] = irv_read_step(vect_old)
-    earth_vect = vect_old;
+function [earth_vect] = irv_read_step(home)
+    earth_vect = -home./norm(home, 2);
 end

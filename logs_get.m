@@ -60,7 +60,7 @@ v_d_logs = v_d_logs.*(180/pi);
 plot(timeline, v_d_logs(:,1), "Color", [1 0 0]);
 plot(timeline, v_d_logs(:,2), "Color", [0 1 0]);
 plot(timeline, v_d_logs(:,3), "Color", [0 0 1]);
-ylabel('vd fi, [degrees/sec]');
+ylabel('vd fi, [degrees]');
 xlabel('t, [sec]');
 legend('vd_x','vd_y','vd_z');
 
