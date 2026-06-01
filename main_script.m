@@ -36,13 +36,13 @@ if (vis_enable)
     axis equal;
     campos([3, 5, 3]);
     draw_basis(inertia_home, inertia_basis, true);
-    limit = 15;
+    limit = 10;
     xlim([-limit limit]);
     ylim([-limit limit]);
     zlim([-limit limit]);
 end
 
-duration = 30;
+duration = 90;
 
 dt = 0.05;
 timeline = 0:dt:duration;
@@ -55,14 +55,15 @@ ev_logs = zeros(timelen, 3);
 qrb_logs = zeros(timelen, 4);
 
 
-rel_home0 = [0; r + h; 0];
+% rel_home0 = [0; r + h; 0];
 rel_basis0 = [2 0 0;
              0 2 0;
              0 0 2];
 w0 = [0, 0, 0];
-q0 = [1, 0, 0, 0];
-fi_orb0 = norm(w_orb,2)*dt;
-q_orb0 = get_quat(w_orb, fi_orb0);
+q0 = [1 0 0 0];
+inclin = 51; % orbit_inclination
+q_orb0 = [cosd(inclin/2) 0 sind(inclin/2) 0];
+rel_home0 = quat_rotate([0; r+h; 0], q_orb0);
 
 X = [w0, q0];
 q_orb = q_orb0;
@@ -70,8 +71,7 @@ rel_basis = rel_basis0;
 rel_home = rel_home0;
 if (vis_enable)
     temp_b = draw_basis(rel_home, rel_basis, false, 0.5, "_1");
-else
-    temp_b = 0;
+    temp_c = draw_vector(rel_home, w0, [0.3 0 0]);
 end
 
 %%
@@ -79,31 +79,31 @@ v_d_fi_prev = 0;
 for i = 1:timelen
     q = star_sensor_step(X(4:7));
     earth_vect = irv_read_step(rel_home);
-    
-    y_axis_to_align = -rel_basis(:, 2)./norm(rel_basis(:, 2), 2); % -y CCK
-
-    v_d_fi_len = acos(earth_vect'*y_axis_to_align);
-    v_d_fi_direction = -cross(y_axis_to_align, earth_vect)';
-    
+      
+    y_axis_to_align = -rel_basis(:, 2)./norm(rel_basis(:, 2), 2); % -y SSK v ISK
+    q1 = inv_quat(X(4:7));
+    earth_vect_SSK = quat_rotate(earth_vect, q1);
+    ort_negy_SSK = quat_rotate(y_axis_to_align, q1);
+        
+    v_d_fi_len = acos(earth_vect_SSK'*ort_negy_SSK);
+    v_d_fi_direction = -cross(ort_negy_SSK, earth_vect_SSK)';
     v_d_fi = v_d_fi_len.*v_d_fi_direction;
-    if (vis_enable)
-        % temp = draw_vector(rel_home, v_d_fi, [1 0 1]);
-        temp2 = draw_vector(rel_home, earth_vect, [0.5 0 0.5], 1);
-    end
-    
+        
     integ = 0.5.*(v_d_fi_prev + v_d_fi).*dt;
-    M_xyz = regulator(v_d_fi, X(1:3), integ);
-    [q_orb, X, rel_home, rel_basis, temp_b] = orbital_modeling_step(dt, rel_home0, rel_basis0, q_orb, X, M_xyz, temp_b);
     
-    X_logs(i,:) = X;
+    M_xyz = regulator(v_d_fi, X(1:3), integ);
+    [q_orb, X, rel_home, rel_basis] = orbital_modeling_step(dt, rel_home0, rel_basis0, q_orb, X, M_xyz);
+    
+    X_logs(i,1:3) = X(1:3);
+    X_logs(i,4:7) = X(4:7);
     M_logs(i,:) = M_xyz;
     v_d_logs(i,:) = v_d_fi;
-    ev_logs(i,:) = earth_vect;
+    ev_logs(i,:) = earth_vect_SSK;
     qrb_logs(i,:) = q_orb;
-    if (vis_enable)
-        pause(dt);
-    end
+    
     v_d_fi_prev = v_d_fi;
+
+    orbital_visualisation;
 end
 
 logs_get;
