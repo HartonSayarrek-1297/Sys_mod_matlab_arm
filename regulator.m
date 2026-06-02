@@ -1,8 +1,8 @@
 function M_xyz = regulator(v_d_fi, omega, integ)
 % v_d_fi - angle error
 % omega - angular rate
-    K = 80;
-    K_diff = 6;
+    K = 200;
+    K_diff = 9;
     K_int = 0;
     S = [0 0 0];
     

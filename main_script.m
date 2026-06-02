@@ -55,15 +55,15 @@ ev_logs = zeros(timelen, 3);
 qrb_logs = zeros(timelen, 4);
 
 
-% rel_home0 = [0; r + h; 0];
-rel_basis0 = [2 0 0;
-             0 2 0;
-             0 0 2];
 w0 = [0, 0, 0];
 q0 = [1 0 0 0];
 inclin = 51; % orbit_inclination
 q_orb0 = [cosd(inclin/2) 0 sind(inclin/2) 0];
+Q_orb = get_quat_matrix(q_orb0);
 rel_home0 = quat_rotate([0; r+h; 0], q_orb0);
+rel_basis0 = Q_orb*[1 0 0;
+                    0 1 0;
+                    0 0 1];
 
 X = [w0, q0];
 q_orb = q_orb0;
@@ -84,7 +84,7 @@ for i = 1:timelen
     q1 = inv_quat(X(4:7));
     earth_vect_SSK = quat_rotate(earth_vect, q1);
     ort_negy_SSK = quat_rotate(y_axis_to_align, q1);
-        
+            
     v_d_fi_len = acos(earth_vect_SSK'*ort_negy_SSK);
     v_d_fi_direction = -cross(ort_negy_SSK, earth_vect_SSK)';
     v_d_fi = v_d_fi_len.*v_d_fi_direction;
@@ -94,7 +94,9 @@ for i = 1:timelen
     M_xyz = regulator(v_d_fi, X(1:3), integ);
     [q_orb, X, rel_home, rel_basis] = orbital_modeling_step(dt, rel_home0, rel_basis0, q_orb, X, M_xyz);
     
-    X_logs(i,1:3) = X(1:3);
+
+    w_ssk = quat_rotate(X(1:3)', inv_quat(q_orb));
+    X_logs(i,1:3) = w_ssk;
     X_logs(i,4:7) = X(4:7);
     M_logs(i,:) = M_xyz;
     v_d_logs(i,:) = v_d_fi;
